@@ -1,4 +1,4 @@
-***AWS CLI Infra contrller***
+***AWS CLI Infra controller***
 
 plugin install aws
 ![img_1.png](static/img_1.png)
@@ -9,3 +9,6 @@ aws configure
 ```
 ![img.png](static/img.png)
    
+```bash
+ aws eks list-clusters --region ap-northeast-2
+```
