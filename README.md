@@ -1,4 +1,4 @@
-*** AWS CLI Infra contrller ***
+***AWS CLI Infra contrller***
 
 plugin install aws
 ![img_1.png](static/img_1.png)
