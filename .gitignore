@@ -14,11 +14,13 @@
 
 # macOS
 .DS_Store
+*.pem
+*.key
 
 # Terraform
 .terraform/
 terraform.tfstate
 terraform.tfstate.backup
-
+.terraform.lock.hcl
 # 기타
 *.log
