@@ -87,7 +87,12 @@ resource "aws_security_group" "resource_sg" {
     protocol    = "tcp"
     cidr_blocks = ["10.0.0.0/8"]
   }
-
+  ingress {
+  from_port   = 3306
+  to_port     = 3306
+  protocol    = "tcp"
+  cidr_blocks = ["10.0.0.0/16"] # 내부 VPC 대역에서만 접속 허용
+  }
   # 기본 아웃바운드 허용
   egress {
     from_port   = 0
