@@ -22,7 +22,7 @@ resource "aws_security_group" "resource_sg" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]  # 원하는 경우 본인 IP로 제한 가능
+    cidr_blocks = ["0.0.0.0/0"] # 원하는 경우 본인 IP로 제한 가능
   }
 
   # Redis
@@ -88,10 +88,10 @@ resource "aws_security_group" "resource_sg" {
     cidr_blocks = ["10.0.0.0/8"]
   }
   ingress {
-  from_port   = 3306
-  to_port     = 3306
-  protocol    = "tcp"
-  cidr_blocks = ["10.0.0.0/16"] # 내부 VPC 대역에서만 접속 허용
+    from_port   = 3306
+    to_port     = 3306
+    protocol    = "tcp"
+    cidr_blocks = ["10.0.0.0/16"] # 내부 VPC 대역에서만 접속 허용
   }
   # 기본 아웃바운드 허용
   egress {

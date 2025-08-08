@@ -1,3 +1,11 @@
+```bash
+kubectl config get-contexts
+```
+```bash
+kubectl config use-context arn:aws:eks:ap-northeast-2:<계정번호>:cluster/spring-eks-dev
+```
+
+
 
 ```bash
 kubectl get pods
