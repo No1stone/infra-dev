@@ -39,24 +39,6 @@ resource "aws_security_group" "eks_cluster" {
   tags = { Name = "${var.cluster_name}-sg" }
 }
 
-# EKS 클러스터
-resource "aws_eks_cluster" "this" {
-  name     = var.cluster_name
-  role_arn = aws_iam_role.eks_cluster.arn
-  version  = "1.31"
-
-  vpc_config {
-    subnet_ids              = var.subnet_ids
-    security_group_ids      = [aws_security_group.eks_cluster.id]
-    endpoint_private_access = true
-    endpoint_public_access  = true
-  }
-
-  depends_on = [
-    aws_iam_role_policy_attachment.eks_cluster_policy,
-    aws_iam_role_policy_attachment.eks_vpc_controller
-  ]
-}
 
 # 노드 역할
 resource "aws_iam_role" "node" {
@@ -90,7 +72,7 @@ resource "aws_eks_node_group" "this" {
   cluster_name    = aws_eks_cluster.this.name
   node_group_name = "${var.cluster_name}-ng"
   node_role_arn   = aws_iam_role.node.arn
-  subnet_ids      = var.subnet_ids
+  subnet_ids      = [data.aws_subnet.primary.id]
   instance_types  = [var.node_instance_type]
 
   scaling_config {

@@ -1,3 +1,4 @@
+# 새로 생성하는경우....
 resource "aws_vpc" "main" {
   cidr_block           = var.vpc_cidr
   enable_dns_support   = true
@@ -6,6 +7,11 @@ resource "aws_vpc" "main" {
     Name = "spring-vpc"
   }
 }
+
+
+#이미있는 내서브넷 읽어오기
+data "aws_subnet" "primary"   { id = var.cluster_subnet_primary_id }
+data "aws_subnet" "secondary" { id = var.cluster_subnet_secondary_id }
 
 resource "aws_subnet" "public" {
   count                   = length(var.public_subnet_cidrs)
