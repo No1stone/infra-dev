@@ -20,6 +20,9 @@ resource "kubernetes_namespace" "gateway" {
     name = "gateway"
   }
 }
+resource "kubernetes_namespace" "resource" {
+  metadata { name = "resource" }
+}
 
 # Ingress NGINX 설치
 resource "helm_release" "ingress_nginx" {

@@ -24,3 +24,13 @@ terraform.tfstate.backup
 .terraform.lock.hcl
 # 기타
 *.log
+# security
+*.pem
+*.key
+*.crt
+*.pfx
+*.jks
+*.kube/config
+**/.env*
+terraform/*.tfstate*
+terraform/.terraform/*
