@@ -1,115 +1,82 @@
-variable "cluster_name" {
-  description = "EKS Cluster name"
-  default     = "spring-eks-dev"
+# AWS
+variable "aws_region" {
+  type    = string
+  default = "ap-northeast-2"
 }
 
-# AZ 선택 (ap-northeast-2 예시)
-variable "primary_az"  { default = "ap-northeast-2a" }
-variable "secondary_az"{ default = "ap-northeast-2b" }
-variable "cluster_version"         {
-    type = string
-    default = "1.25"
-    }
-# variable "eks_cluster_role_arn"    { type = string } # 이미 만든 클러스터 롤 ARN
-# variable "eks_node_role_arn"       { type = string } # 이미 만든 노드 롤 ARN
-
-resource "aws_subnet" "eks_private_primary" {
-  vpc_id                  = var.vpc_id
-  cidr_block              = "10.0.10.0/24"
-  availability_zone       = var.primary_az
-  map_public_ip_on_launch = false
-  tags = {
-    Name                                   = "${var.cluster_name}-private-${var.primary_az}"
-    "kubernetes.io/role/internal-elb"      = "1"
-    "kubernetes.io/cluster/${var.cluster_name}" = "owned"
-  }
-}
-
-# 사용안함
-resource "aws_subnet" "eks_private_secondary_tiny" {
-  vpc_id                  = var.vpc_id
-  cidr_block              = "10.0.20.0/28" # 최소 /28 껍데기
-  availability_zone       = var.secondary_az
-  map_public_ip_on_launch = false
-  tags = {
-    Name                                   = "${var.cluster_name}-private-${var.secondary_az}-tiny"
-    "kubernetes.io/role/internal-elb"      = "1"
-    "kubernetes.io/cluster/${var.cluster_name}" = "owned"
-  }
-}
-
-resource "aws_eks_cluster" "this" {
-  name     = var.cluster_name
-  version  = var.cluster_version
-  role_arn = var.eks_cluster_role_arn
-
-  vpc_config {
-    subnet_ids = [
-      aws_subnet.eks_private_primary.id,
-      aws_subnet.eks_private_secondary_tiny.id
-    ]
-    endpoint_private_access = true
-    endpoint_public_access  = true
-  }
-}
-
-resource "aws_eks_node_group" "primary_only" {
-  cluster_name    = aws_eks_cluster.this.name
-  node_group_name = "${var.cluster_name}-primary"
-  node_role_arn   = var.eks_node_role_arn
-  subnet_ids      = [aws_subnet.eks_private_primary.id] # a만
-
-  scaling_config {
-    desired_size = 1
-    min_size     = 1
-    max_size     = 2
-  }
-
-  update_config { max_unavailable = 1 }
-  capacity_type = "ON_DEMAND"
-  ami_type      = "AL2_x86_64"
-}
-
+# 기존 네트워크 관리/참조
 variable "vpc_id" {
-  type    = string
-  default = "vpc-00fae3f8256a9cd22"
+  type = string
 }
 
-variable "subnet_ids" {
+variable "private_subnet_ids" {
   type = list(string)
-  default = [
-    "subnet-03906d593e24a05b1", # ap-northeast-2a
-    "subnet-09eaf6fa743d0fc16"  # ap-northeast-2b
-  ]
+  description = "EKS cluster subnets (>=2 AZ)"
 }
-variable "node_instance_type" {
+
+variable "public_subnet_ids" {
+  type    = list(string)
+  default = []
+}
+
+variable "nat_instance_id" {
+  type = string
+  description = "Existing NAT/Proxy EC2 instance id"
+}
+
+variable "nat_eip_allocation_id" {
   type    = string
-  default = "t3.medium"
+  default = null
 }
-variable "desired_size" {
+
+# EKS
+variable "cluster_name" {
+  type    = string
+  default = "spring-eks-dev"
+}
+
+variable "cluster_version" {
+  type    = string
+  default = "1.30"
+}
+
+variable "instance_types" {
+  type    = list(string)
+  default = ["t3.medium"]
+}
+
+variable "node_min" {
   type    = number
   default = 1
 }
 
-variable "max_size" {
+variable "node_subnet_ids" {
+  type        = list(string)
+  default     = []
+  description = "EKS nodegroup subnets (default: first of private_subnet_ids)"
+}
+
+variable "node_desired" {
   type    = number
   default = 2
 }
 
-variable "min_size" {
+variable "node_max" {
   type    = number
-  default = 0
+  default = 3
 }
 
-variable "region" {
-  default = "ap-northeast-2"
+variable "node_disk" {
+  type    = number
+  default = 20
 }
 
-variable "vpc_cidr" {
-  default = "10.0.0.0/16"
-}
-
-variable "public_subnet_cidrs" {
-  type    = list(string)
-  default = ["10.0.1.0/24", "10.0.2.0/24"]
+# 공통 태그
+variable "tags" {
+  type = map(string)
+  default = {
+    Project = "spring-portfolio"
+    Owner   = "wonseok"
+    Env     = "dev"
+  }
 }

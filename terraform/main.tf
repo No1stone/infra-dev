@@ -1,47 +1,24 @@
-# 새로 생성하는경우....
-resource "aws_vpc" "main" {
-  cidr_block           = var.vpc_cidr
-  enable_dns_support   = true
-  enable_dns_hostnames = true
-  tags = {
-    Name = "spring-vpc"
-  }
+# 예시: 기존 네트워크 data 참조 (문법 정리)
+data "aws_vpc" "existing" {
+  id = var.vpc_id
 }
 
-
-#이미있는 내서브넷 읽어오기
-data "aws_subnet" "primary"   { id = var.cluster_subnet_primary_id }
-data "aws_subnet" "secondary" { id = var.cluster_subnet_secondary_id }
-
-resource "aws_subnet" "public" {
-  count                   = length(var.public_subnet_cidrs)
-  vpc_id                  = aws_vpc.main.id
-  cidr_block              = var.public_subnet_cidrs[count.index]
-  map_public_ip_on_launch = true
-  availability_zone       = "${var.region}a"
-
-  tags = {
-    Name = "public-subnet-${count.index + 1}"
-  }
+data "aws_subnet" "private" {
+  for_each = toset(var.private_subnet_ids)
+  id       = each.value
 }
 
-resource "aws_internet_gateway" "gw" {
-  vpc_id = aws_vpc.main.id
-  tags = {
-    Name = "spring-gateway"
-  }
+data "aws_subnet" "public" {
+  for_each = toset(var.public_subnet_ids)
+  id       = each.value
 }
 
-resource "aws_route_table" "public" {
-  vpc_id = aws_vpc.main.id
-  route {
-    cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.gw.id
-  }
+data "aws_instance" "nat" {
+  instance_id = var.nat_instance_id
 }
 
-resource "aws_route_table_association" "a" {
-  count          = length(aws_subnet.public)
-  subnet_id      = aws_subnet.public[count.index].id
-  route_table_id = aws_route_table.public.id
+locals {
+  cluster_subnet_ids       = var.private_subnet_ids
+  effective_node_subnet_ids = length(var.node_subnet_ids) > 0 ? var.node_subnet_ids : [var.private_subnet_ids[0]]
 }
+# (필요 시) 관리 전환용 resource + import + prevent_destroy 는 이전 답변 그대로 사용

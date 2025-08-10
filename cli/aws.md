@@ -1,3 +1,7 @@
+```bash
+aws eks --region ap-northeast-2 update-kubeconfig --name spring-eks-dev
+```
+
 
 vpc 확인
 ```bash 
