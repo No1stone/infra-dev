@@ -25,25 +25,25 @@ resource "kubernetes_namespace" "resource" {
 }
 
 # Ingress NGINX 설치
-resource "helm_release" "ingress_nginx" {
-  name       = "ingress-nginx"
-  repository = "https://kubernetes.github.io/ingress-nginx"
-  chart      = "ingress-nginx"
-  namespace  = "ingress-nginx"
-  create_namespace = true
-
-  set = [
-    {
-      name  = "controller.replicaCount"
-      value = "2"
-    },
-    {
-      name  = "controller.service.type"
-      value = "LoadBalancer"
-    }
-  ]
-}
-
+# resource "helm_release" "ingress_nginx" {
+#   name       = "ingress-nginx"
+#   repository = "https://kubernetes.github.io/ingress-nginx"
+#   chart      = "ingress-nginx"
+#   namespace  = "ingress-nginx"
+#   create_namespace = true
+#
+#   set = [
+#     {
+#       name  = "controller.replicaCount"
+#       value = "2"
+#     },
+#     {
+#       name  = "controller.service.type"
+#       value = "LoadBalancer"
+#     }
+#   ]
+# }
+#
 
 data "aws_eks_cluster" "this" {
   name = aws_eks_cluster.this.name

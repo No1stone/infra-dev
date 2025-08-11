@@ -75,9 +75,9 @@ resource "aws_eks_cluster" "this" {
 
   tags = var.tags
 
-  lifecycle {
-    prevent_destroy = true
-  }
+#   lifecycle {
+#     prevent_destroy = true
+#   }
 
   depends_on = [aws_iam_role_policy_attachment.eks_cluster_AmazonEKSClusterPolicy]
 }
@@ -105,7 +105,9 @@ resource "aws_eks_node_group" "default" {
     max_unavailable = 1
   }
 
-  tags = var.tags
+  tags = {
+      Name = "eks-node-default"
+  }
 
   lifecycle {
     prevent_destroy = false
@@ -142,7 +144,9 @@ resource "aws_eks_node_group" "app" {
     max_unavailable = 1
   }
 
-  tags = var.tags
+  tags = {
+      Name = "eks-node-app"
+  }
 
   lifecycle {
     prevent_destroy = false
