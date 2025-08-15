@@ -4,7 +4,6 @@ variable "aws_region" {
   default = "ap-northeast-2"
 }
 
-
 # 기존 네트워크 관리/참조
 variable "vpc_id" {
   type = string
