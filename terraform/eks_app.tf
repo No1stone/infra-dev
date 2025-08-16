@@ -1,11 +1,21 @@
-# Kubernetes & Helm provider는 provider.tf에 같이 넣을 수도 있음
+data "aws_eks_cluster" "this" {
+  name = aws_eks_cluster.this.name
+}
+
+data "aws_eks_cluster_auth" "this" {
+  name = aws_eks_cluster.this.name
+}
+
+
 provider "kubernetes" {
+  alias                  = "eks"
   host                   = data.aws_eks_cluster.this.endpoint
   cluster_ca_certificate = base64decode(data.aws_eks_cluster.this.certificate_authority[0].data)
   token                  = data.aws_eks_cluster_auth.this.token
 }
 
 provider "helm" {
+  alias                  = "eks"
   kubernetes = {
     host                   = data.aws_eks_cluster.this.endpoint
     cluster_ca_certificate = base64decode(data.aws_eks_cluster.this.certificate_authority[0].data)
@@ -45,10 +55,3 @@ resource "kubernetes_namespace" "resource" {
 # }
 #
 
-data "aws_eks_cluster" "this" {
-  name = aws_eks_cluster.this.name
-}
-
-data "aws_eks_cluster_auth" "this" {
-  name = aws_eks_cluster.this.name
-}
