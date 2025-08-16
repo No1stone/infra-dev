@@ -21,10 +21,10 @@ locals {
 resource "aws_instance" "resource_server" {
   ami                         = "ami-0c233408b5af0e974"
   instance_type               = "t3.medium"
-  subnet_id                   = "subnet-03b2c1c9e27320a03" # NAT 프록시와 동일 서브넷
+  subnet_id                   = "subnet-03906d593e24a05b1" # NAT 프록시와 동일 서브넷
   vpc_security_group_ids      = [aws_security_group.resource_sg.id]
   key_name                    = "origemiteKEY"
-  private_ip                  = "10.0.14.109"
+  private_ip                  = "10.0.128.109"
   associate_public_ip_address = false # NAT 프록시 통해 인터넷 통신
 
   root_block_device {
