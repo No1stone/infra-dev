@@ -8,7 +8,7 @@ resource "helm_release" "ingress_nginx" {
   provider  = helm.eks
   name      = "ingress-nginx"
   namespace = kubernetes_namespace.ingress_nginx.metadata[0].name
-
+  create_namespace = true
   repository = "https://kubernetes.github.io/ingress-nginx"
   chart      = "ingress-nginx"
   version    = "4.11.3" # controller v1.11.x 계열(EKS 1.30 호환)
@@ -33,7 +33,8 @@ resource "helm_release" "ingress_nginx" {
   })]
 
   depends_on = [
-    kubernetes_namespace.ingress_nginx,
-    aws_eks_cluster.this
+       aws_eks_cluster.this,
+       aws_eks_node_group.default,
+       aws_eks_node_group.app
   ]
 }

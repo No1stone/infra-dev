@@ -1,14 +1,96 @@
+
+
+# resource "aws_instance" "resource_server" {
+#   ami                         = "ami-0c233408b5af0e974" # Docker 설치된 최신 Amazon Linux 2 ECS AMI
+#   instance_type               = "t3.medium"
+#   subnet_id                   = "subnet-03b2c1c9e27320a03" # NAT 프록시와 동일 서브넷
+#   vpc_security_group_ids      = [aws_security_group.resource_sg.id]
+#   key_name                    = "origemiteKEY"
+#   associate_public_ip_address = false # NAT 프록시 통해 인터넷 통신
+#   private_ip                  = "10.0.14.109"
+#   tags = {
+#     Name = "resource-server"
+#   }
+# }
+
+locals {
+  compose_b64 = base64encode(file("${path.module}/../docker/resource/docker-compose.yml"))
+  prom_b64    = base64encode(file("${path.module}/../docker/resource/prometheus.yml"))
+}
+
 resource "aws_instance" "resource_server" {
-  ami                         = "ami-0c233408b5af0e974" # Docker 설치된 최신 Amazon Linux 2 ECS AMI
+  ami                         = "ami-0c233408b5af0e974"
   instance_type               = "t3.medium"
   subnet_id                   = "subnet-03b2c1c9e27320a03" # NAT 프록시와 동일 서브넷
   vpc_security_group_ids      = [aws_security_group.resource_sg.id]
   key_name                    = "origemiteKEY"
-  associate_public_ip_address = false # NAT 프록시 통해 인터넷 통신
   private_ip                  = "10.0.14.109"
-  tags = {
-    Name = "resource-server"
+  associate_public_ip_address = false # NAT 프록시 통해 인터넷 통신
+
+  root_block_device {
+    volume_size = 30
+    volume_type = "gp3"
   }
+
+  # cloud-init
+user_data_replace_on_change = true
+user_data = <<-EOF
+#!/bin/bash
+set -eux
+systemctl stop ecs || true
+systemctl disable ecs || true
+systemctl enable --now docker || true
+usermod -aG docker ec2-user || true
+
+# docker compose v2 설치(플러그인)
+mkdir -p /usr/local/lib/docker/cli-plugins
+if ! /usr/bin/docker compose version >/dev/null 2>&1; then
+  curl -fsSL "https://github.com/docker/compose/releases/download/v2.28.1/docker-compose-$(uname -s)-$(uname -m)" \
+    -o /usr/local/lib/docker/cli-plugins/docker-compose
+  chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
+fi
+
+mkdir -p /opt/resource-stack
+cd /opt/resource-stack
+echo "${local.compose_b64}" | base64 -d > docker-compose.yml
+echo "${local.prom_b64}"    | base64 -d > prometheus.yml
+
+cat > .env.resource <<'ENVEOF'
+MYSQL_ROOT_PASSWORD=change-me-root
+MYSQL_DATABASE=app
+MYSQL_USER=app
+MYSQL_PASSWORD=change-me-app
+GF_SECURITY_ADMIN_USER=admin
+GF_SECURITY_ADMIN_PASSWORD=change-me-grafana
+ES_JAVA_HEAP_MB=512
+ENVEOF
+echo "KAFKA_ADVERTISED_HOST=$(curl -s 169.254.169.254/latest/meta-data/local-ipv4)" >> .env.resource
+
+/usr/bin/docker compose --env-file .env.resource up -d
+
+cat >/etc/systemd/system/resource-stack.service <<'UNIT'
+[Unit]
+Description=Resource Stack (docker compose)
+After=docker.service
+Requires=docker.service
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+WorkingDirectory=/opt/resource-stack
+ExecStart=/usr/bin/docker compose --env-file ./.env.resource up -d
+ExecStop=/usr/bin/docker compose down
+[Install]
+WantedBy=multi-user.target
+UNIT
+systemctl daemon-reload
+systemctl enable resource-stack
+EOF
+
+  tags = { Name = "resource-server" }
+}
+
+output "resource_server_private_ip" {
+  value = aws_instance.resource_server.private_ip
 }
 
 resource "aws_security_group" "resource_sg" {

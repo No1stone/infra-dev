@@ -26,12 +26,24 @@ provider "helm" {
 
 # 네임스페이스 생성
 resource "kubernetes_namespace" "gateway" {
+  provider = kubernetes.eks
   metadata {
     name = "gateway"
   }
+  depends_on = [
+    aws_eks_cluster.this,
+    aws_eks_node_group.default,
+    aws_eks_node_group.app
+    ]
 }
 resource "kubernetes_namespace" "resource" {
+  provider = kubernetes.eks
   metadata { name = "resource" }
+  depends_on = [
+    aws_eks_cluster.this,
+    aws_eks_node_group.default,
+    aws_eks_node_group.app
+    ]
 }
 
 # Ingress NGINX 설치
