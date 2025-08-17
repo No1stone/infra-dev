@@ -4,6 +4,7 @@ metadata:
   name: gateway
   namespace: gateway
   labels: { app: gateway }
+
 spec:
   replicas: 1
   selector:
