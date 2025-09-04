@@ -81,3 +81,11 @@ services:
       MYSQL_PASSWORD: apppass
     volumes:
       - ./mysql-data:/var/lib/mysql
+
+  rabbitmq:
+    container_name: rabbitmq
+    image: "rabbitmq:3-management"
+    hostname: "rabbitmq"
+    ports:
+      - "15672:15672" # Management interface
+      - "5672:5672"   # RabbitMQ client
