@@ -5,3 +5,10 @@ scrape_configs:
   - job_name: 'prometheus'
     static_configs:
       - targets: ['localhost:9090']
+  - job_name: 'spring-app'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['resource-server:8080']
+  - job_name: 'otel-collector'
+    static_configs:
+      - targets: ['otel-collector:8888']

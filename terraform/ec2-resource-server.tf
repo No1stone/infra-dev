@@ -16,7 +16,12 @@
 locals {
   compose_b64 = base64encode(file("${path.module}/../docker/resource/docker-compose.yml"))
   prom_b64    = base64encode(file("${path.module}/../docker/resource/prometheus.yml"))
+  fluent_b64  = base64encode(file("${path.module}/../docker/resource/fluent-bit.conf"))
+  otel_b64 = base64encode(file("${path.module}/../docker/resource/otel-collector-config.yaml"))
+
 }
+
+
 
 resource "aws_instance" "resource_server" {
   ami                         = "ami-0c233408b5af0e974"
@@ -54,6 +59,9 @@ mkdir -p /opt/resource-stack
 cd /opt/resource-stack
 echo "${local.compose_b64}" | base64 -d > docker-compose.yml
 echo "${local.prom_b64}"    | base64 -d > prometheus.yml
+echo "${local.fluent_b64}"  | base64 -d > fluent-bit.conf
+echo "${local.otel_b64}" | base64 -d > otel-collector-config.yaml
+
 
 cat > .env.resource <<'ENVEOF'
 MYSQL_ROOT_PASSWORD=change-me-root

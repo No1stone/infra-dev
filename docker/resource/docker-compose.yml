@@ -111,6 +111,7 @@ services:
       - "4318:4318"   # OTLP HTTP
     depends_on:
       - zipkin
+
   zipkin:
     image: openzipkin/zipkin:latest
     container_name: zipkin
