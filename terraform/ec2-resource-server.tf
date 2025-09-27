@@ -175,6 +175,57 @@ resource "aws_security_group" "resource_sg" {
     protocol    = "tcp"
     cidr_blocks = ["10.0.0.0/16"] # 내부 VPC 대역에서만 접속 허용
   }
+  # Fluent Bit (수집 포트)
+  ingress {
+    description = "Fluent Bit"
+    from_port   = 24224
+    to_port     = 24224
+    protocol    = "tcp"
+    cidr_blocks = ["10.0.0.0/8"]
+  }
+  ingress {
+    description = "Fluent Bit UDP"
+    from_port   = 24224
+    to_port     = 24224
+    protocol    = "udp"
+    cidr_blocks = ["10.0.0.0/8"]
+  }
+
+  # OpenTelemetry Collector (OTLP)
+  ingress {
+    description = "OTLP gRPC"
+    from_port   = 4317
+    to_port     = 4317
+    protocol    = "tcp"
+    cidr_blocks = ["10.0.0.0/8"]
+  }
+  ingress {
+    description = "OTLP HTTP"
+    from_port   = 4318
+    to_port     = 4318
+    protocol    = "tcp"
+    cidr_blocks = ["10.0.0.0/8"]
+  }
+
+  # Zipkin
+  ingress {
+    description = "Zipkin"
+    from_port   = 9411
+    to_port     = 9411
+    protocol    = "tcp"
+    cidr_blocks = ["10.0.0.0/8"]
+  }
+
+  # Vault
+  ingress {
+    description = "Vault"
+    from_port   = 8200
+    to_port     = 8200
+    protocol    = "tcp"
+    cidr_blocks = ["10.0.0.0/8"]
+  }
+
+
   # 기본 아웃바운드 허용
   egress {
     from_port   = 0
