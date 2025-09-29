@@ -13,6 +13,7 @@
 #   }
 # }
 
+
 locals {
   compose_b64 = base64encode(file("${path.module}/../docker/resource/docker-compose.yml"))
   prom_b64    = base64encode(file("${path.module}/../docker/resource/prometheus.yml"))
