@@ -31,7 +31,7 @@ Nat Instance
 
 Proxy Instance 
 
-![img_8.png](static/img_8.png)
+![img.png](img.png)
 
 Reource Instance
 
