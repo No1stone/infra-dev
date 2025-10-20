@@ -27,7 +27,6 @@
 
 Nat Instance 
 
-![img_7.png](static/img_7.png)
 
 Proxy Instance 
 
