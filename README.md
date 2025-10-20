@@ -35,6 +35,13 @@ Proxy Instance
 
 Reource Instance
 
+![img_9.png](static/img_9.png)
+
+
+Eks Cluster
+
+![img_10.png](static/img_10.png)
+
 
 ***AWS CLI Infra controller***
 
