@@ -25,7 +25,7 @@
 | nextcloud     | next.origemite.com 개인 문서작성용 컨플루언스대용 |
 ---
 
-Nat Instance 
+Aws resource
 
 ![img_7.png](static/img_7.png)
 
