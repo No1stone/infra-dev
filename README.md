@@ -21,10 +21,13 @@
 | 배포 OS         | Ubuntu 24.04 LTS                    |
 | Java / Spring | JDK 17 / Spring Boot 3.5.0          |
 | DB            | MySQL 10.5                          |
-| GIT           | git.origemite.com 개인 소스보관용 깃        |
+| GIT           | git.origemite.com 개인 소스코드 보관용 깃     |
 | nextcloud     | next.origemite.com 개인 문서작성용 컨플루언스대용 |
-
 ---
+
+Nat Instance 
+![img_6.png](static/img_6.png)
+
 
 
 ***AWS CLI Infra controller***
