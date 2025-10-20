@@ -26,9 +26,8 @@
 ---
 
 Nat Instance 
-![img_6.png](static/img_6.png)
 
-
+![img_7.png](static/img_7.png)
 
 ***AWS CLI Infra controller***
 
