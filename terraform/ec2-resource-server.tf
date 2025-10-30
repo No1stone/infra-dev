@@ -42,22 +42,41 @@ resource "aws_instance" "resource_server" {
 user_data_replace_on_change = true
 user_data = <<-EOF
 #!/bin/bash
+# set -eux
+# systemctl stop ecs || true
+# systemctl disable ecs || true
+# systemctl enable --now docker || true
+# usermod -aG docker ec2-user || true
+#
+# # docker compose v2 설치(플러그인)
+# mkdir -p /usr/local/lib/docker/cli-plugins
+# if ! /usr/bin/docker compose version >/dev/null 2>&1; then
+#   curl -fsSL "https://github.com/docker/compose/releases/download/v2.28.1/docker-compose-$(uname -s)-$(uname -m)" \
+#     -o /usr/local/lib/docker/cli-plugins/docker-compose
+#   chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
+# fi
+
 set -eux
+
 systemctl stop ecs || true
 systemctl disable ecs || true
+
+# Docker & Compose 플러그인 (AL2)
+yum install -y docker || true
 systemctl enable --now docker || true
 usermod -aG docker ec2-user || true
 
-# docker compose v2 설치(플러그인)
-mkdir -p /usr/local/lib/docker/cli-plugins
+# compose v2 확인 후, 없으면 깃허브에서 설치
 if ! /usr/bin/docker compose version >/dev/null 2>&1; then
-  curl -fsSL "https://github.com/docker/compose/releases/download/v2.28.1/docker-compose-$(uname -s)-$(uname -m)" \
+  mkdir -p /usr/local/lib/docker/cli-plugins
+  curl -fsSL "https://github.com/docker/compose/releases/download/v2.40.3/docker-compose-$(uname -s)-$(uname -m)" \
     -o /usr/local/lib/docker/cli-plugins/docker-compose
   chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
+  docker compose version
 fi
 
-mkdir -p /opt/resource-stack
-cd /opt/resource-stack
+mkdir -p /home/ec2-user/resource-stack
+cd /home/ec2-user/resource-stack
 echo "${local.compose_b64}" | base64 -d > docker-compose.yml
 echo "${local.prom_b64}"    | base64 -d > prometheus.yml
 echo "${local.fluent_b64}"  | base64 -d > fluent-bit.conf
@@ -85,7 +104,7 @@ Requires=docker.service
 [Service]
 Type=oneshot
 RemainAfterExit=yes
-WorkingDirectory=/opt/resource-stack
+WorkingDirectory=/home/ec2-user/resource-stack
 ExecStart=/usr/bin/docker compose --env-file ./.env.resource up -d
 ExecStop=/usr/bin/docker compose down
 [Install]

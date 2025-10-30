@@ -38,3 +38,14 @@ terraform state rm {resource}
 ```bash
 terraform import {resource} {resourceId}
 ```
+
+```bash
+terraform apply -target=aws_instance.resource_server -auto-approve
+```
+
+```bash
+terraform destroy -target=aws_instance.resource_server -auto-approve
+```
+```text
+sudo tail -n 200 /var/log/cloud-init-output.log
+```
