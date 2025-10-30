@@ -102,6 +102,13 @@ services:
     restart: always
     ports:
       - "3306:3306"
+    command: >
+      mysqld
+      --bind-address=0.0.0.0
+      --default-authentication-plugin=mysql_native_password
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_general_ci
+      --skip-name-resolve=ON
     environment:
       MYSQL_ROOT_PASSWORD: pass1234
       MYSQL_DATABASE: appdb

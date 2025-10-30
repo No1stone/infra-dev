@@ -27,6 +27,7 @@ locals {
 resource "aws_instance" "resource_server" {
   ami                         = "ami-0c233408b5af0e974"
   instance_type               = "t3.medium"
+#   subnet_id                   = "subnet-03906d593e24a05b1" # NAT 프록시와 동일 서브넷
   subnet_id                   = "subnet-03906d593e24a05b1" # NAT 프록시와 동일 서브넷
   vpc_security_group_ids      = [aws_security_group.resource_sg.id]
   key_name                    = "origemiteKEY"
@@ -66,14 +67,6 @@ yum install -y docker || true
 systemctl enable --now docker || true
 usermod -aG docker ec2-user || true
 
-# compose v2 확인 후, 없으면 깃허브에서 설치
-if ! /usr/bin/docker compose version >/dev/null 2>&1; then
-  mkdir -p /usr/local/lib/docker/cli-plugins
-  curl -fsSL "https://github.com/docker/compose/releases/download/v2.40.3/docker-compose-$(uname -s)-$(uname -m)" \
-    -o /usr/local/lib/docker/cli-plugins/docker-compose
-  chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
-  docker compose version
-fi
 
 mkdir -p /home/ec2-user/resource-stack
 cd /home/ec2-user/resource-stack
@@ -81,8 +74,6 @@ echo "${local.compose_b64}" | base64 -d > docker-compose.yml
 echo "${local.prom_b64}"    | base64 -d > prometheus.yml
 echo "${local.fluent_b64}"  | base64 -d > fluent-bit.conf
 echo "${local.otel_b64}" | base64 -d > otel-collector-config.yaml
-
-
 cat > .env.resource <<'ENVEOF'
 MYSQL_ROOT_PASSWORD=change-me-root
 MYSQL_DATABASE=app
@@ -93,6 +84,15 @@ GF_SECURITY_ADMIN_PASSWORD=change-me-grafana
 ES_JAVA_HEAP_MB=512
 ENVEOF
 echo "KAFKA_ADVERTISED_HOST=$(curl -s 169.254.169.254/latest/meta-data/local-ipv4)" >> .env.resource
+
+# compose v2 확인 후, 없으면 깃허브에서 설치
+if ! /usr/bin/docker compose version >/dev/null 2>&1; then
+  mkdir -p /usr/local/lib/docker/cli-plugins
+  curl -fsSL "https://github.com/docker/compose/releases/download/v2.40.3/docker-compose-$(uname -s)-$(uname -m)" \
+    -o /usr/local/lib/docker/cli-plugins/docker-compose
+  chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
+  docker compose version
+fi
 
 /usr/bin/docker compose --env-file .env.resource up -d
 

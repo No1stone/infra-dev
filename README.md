@@ -67,3 +67,7 @@ aws 확인
 ![img_3.png](static/img_3.png)
 보안그룹 생성확인
 ![img_5.png](static/img_5.png)
+테라폼으로 리소스 생성 확인
+![img_11.png](static/img_11.png)
+mysql 리소스서버 도메인 접속 확인
+![img_12.png](static/img_12.png)
