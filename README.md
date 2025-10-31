@@ -33,7 +33,7 @@ Proxy Instance
 
 ![img_8.png](static/img_8.png)
 
-Reource Instance
+Resource Instance
 
 ![img_9.png](static/img_9.png)
 
