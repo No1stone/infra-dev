@@ -1,0 +1,22 @@
+services:
+
+  jenkins:
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    container_name: jenkins
+    #  image: jenkins/jenkins:jdk17
+    restart: always
+    ports:
+      - 10000:8080
+      - 50000:50000
+    volumes:
+      - ./jenkins_home:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/log/jenkins:/var/log/jenkins
+      #  - jenkins_plugins:/usr/share/jenkins/ref/plugins
+    user: root
+    environment:
+      TZ: "Asia/Seoul"
+    privileged: true
