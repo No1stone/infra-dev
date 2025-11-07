@@ -55,3 +55,20 @@ alb/elb
 ```bash
 aws elbv2 describe-load-balancers --region ap-northeast-2
 ```
+
+```bash
+# 최초 슬롯 활성화(예: blue로 시작)
+aws ssm put-parameter --name "/deploy/gateway/state/active_slot" --type String --value "blue" --overwrite --region ap-northeast-2
+aws ssm put-parameter --name "/deploy/gateway/state/lock" --type String --value "false" --overwrite --region ap-northeast-2
+
+# 슬롯 태그 초기화(처음엔 빈 값 가능)
+aws ssm put-parameter --name "/deploy/gateway/slot/blue/tag"   --type String --value "" --overwrite --region ap-northeast-2
+aws ssm put-parameter --name "/deploy/gateway/slot/blue/digest"--type String --value "" --overwrite --region ap-northeast-2
+aws ssm put-parameter --name "/deploy/gateway/slot/green/tag"  --type String --value "" --overwrite --region ap-northeast-2
+aws ssm put-parameter --name "/deploy/gateway/slot/green/digest"--type String --value "" --overwrite --region ap-northeast-2
+
+# 가시성 키도 비워두고 시작 가능
+aws ssm put-parameter --name "/deploy/gateway/current_tag"   --type String --value "" --overwrite --region ap-northeast-2
+aws ssm put-parameter --name "/deploy/gateway/current_digest"--type String --value "" --overwrite --region ap-northeast-2
+
+```
