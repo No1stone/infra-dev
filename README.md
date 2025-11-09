@@ -27,8 +27,7 @@
 ---
 
 Aws resource
-
-![img_7.png](static/img_7.png)
+![img_14.png](static/img_14.png)
 
 Proxy Instance 
 
