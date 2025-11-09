@@ -1,7 +1,7 @@
 #  Origemite Infrastructure (Terraform)
 
 > **AWS 기반 저비용 포트폴리오 인프라 구성**  
-> boot-base 리포의 인프라 프로젝트
+> boot-base 리포의 인프라 프로젝트  
 > NAT Gateway / ACM / ALB 제거 → EC2 기반 Proxy + Certbot SSL  
 > Route53 도메인 `origemite.com`, 싱글 AZ(`ap-northeast-2a`) 운영
 
