@@ -1,53 +1,108 @@
+#auth_enabled: false
+#
+#server:
+#  http_listen_port: 3100
+#  grpc_listen_port: 9096
+#
+#common:
+#  instance_addr: 127.0.0.1
+#  path_prefix: /loki
+#  storage:
+#    filesystem:
+#      chunks_directory: /loki/chunks
+#      rules_directory: /loki/rules
+#  replication_factor: 1
+#  ring:
+#    kvstore: { store: inmemory }
+#
+#schema_config:
+#  configs:
+#    - from: 2024-01-01
+#      store: boltdb-shipper
+#      object_store: filesystem
+#      schema: v13
+#      index: { prefix: index_, period: 24h }
+#
+#storage_config:
+#  boltdb_shipper:
+#    active_index_directory: /loki/index
+#    cache_location: /loki/boltdb-cache
+#  filesystem:
+#    directory: /loki/chunks
+#
+#compactor:
+#  working_directory: /loki/boltdb-shipper-compactor
+#  retention_enabled: true
+#  retention_delete_delay: 2h
+#  retention_delete_worker_count: 1
+#  delete_request_store: filesystem
+#
+#limits_config:
+#  retention_period: 168h
+#  ingestion_rate_mb: 10
+#  ingestion_burst_size_mb: 20
+#  max_entries_limit_per_query: 5000
+#  max_chunks_per_query: 100000
+#  reject_old_samples: false
+#  reject_old_samples_max_age: 168h
+#  allow_structured_metadata: false
+#
+#table_manager:
+#  retention_deletes_enabled: true
+#  retention_period: 168h
+######
+
 auth_enabled: false
 
 server:
   http_listen_port: 3100
   grpc_listen_port: 9096
 
+# 단일 노드 링 저장소: Consul 대신 memberlist 사용
 common:
-  instance_addr: 127.0.0.1
-  path_prefix: /loki
-  storage:
-    filesystem:
-      chunks_directory: /loki/chunks
-      rules_directory: /loki/rules
-  replication_factor: 1
   ring:
-    kvstore: { store: inmemory }
+    kvstore:
+      store: memberlist
+    replication_factor: 1        # 단일 노드 필수
+
+memberlist:
+  join_members: []               # 단일 노드면 비움
+  # bind_port: 7946              # 필요시 명시
 
 schema_config:
   configs:
-    - from: 2024-01-01
-      store: boltdb-shipper
+    - from: 2020-01-01
+      store: tsdb
       object_store: filesystem
       schema: v13
-      index: { prefix: index_, period: 24h }
+      index:
+        prefix: loki_index_
+        period: 24h
 
 storage_config:
-  boltdb_shipper:
-    active_index_directory: /loki/index
-    cache_location: /loki/boltdb-cache
   filesystem:
-    directory: /loki/chunks
+    directory: /var/loki/chunks
+  tsdb_shipper:
+    active_index_directory: /var/loki/index
+    cache_location: /var/loki/index_cache
 
 compactor:
-  working_directory: /loki/boltdb-shipper-compactor
-  retention_enabled: true
-  retention_delete_delay: 2h
-  retention_delete_worker_count: 1
+  working_directory: /var/loki/compactor
   delete_request_store: filesystem
 
-limits_config:
-  retention_period: 168h
-  ingestion_rate_mb: 10
-  ingestion_burst_size_mb: 20
-  max_entries_limit_per_query: 5000
-  max_chunks_per_query: 100000
-  reject_old_samples: false
-  reject_old_samples_max_age: 168h
-  allow_structured_metadata: false
+ingester:
+  wal:
+    enabled: true
+    dir: /var/loki/wal
+  shutdown_marker_path: /var/loki/shutdown-markers
+  lifecycler:
+    ring:
+      replication_factor: 1      # 안전하게 한 번 더 명시
 
-table_manager:
-  retention_deletes_enabled: true
-  retention_period: 168h
-######
+limits_config:
+  ingestion_rate_mb: 8
+  ingestion_burst_size_mb: 16
+  # 필요시 추가: max_concurrent_tail_requests, max_query_lookback, etc.
+
+analytics:
+  reporting_enabled: false       # 사용 통계 비활성화

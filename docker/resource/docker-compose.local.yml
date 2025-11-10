@@ -145,7 +145,7 @@ services:
 #https://grafana.com/docs/opentelemetry/docker-lgtm/
   otel-collector:
 #    image: otel/opentelemetry-collector-contrib:latest
-    image: otel/opentelemetry-collector-contrib:0.104.0
+    image: otel/opentelemetry-collector-contrib:0.138.0
 #    image: grafana/otel-lgtm:0.11.17
     container_name: otel-collector
     volumes:
@@ -173,7 +173,7 @@ services:
     command: ["-config.file=/etc/loki/config.yaml"]
     volumes:
       - ./loki-config.yaml:/etc/loki/config.yaml:ro
-      - ./loki-data:/loki
+      - ./loki-data:/var/loki
     restart: always
     environment:
       - TZ=Asia/Seoul
