@@ -5,11 +5,27 @@ receivers:
       grpc:
 
 exporters:
+  loki:
+    endpoint: ${LOKI_ENDPOINT}
   zipkin:
     endpoint: "http://zipkin:9411/api/v2/spans"
+  elasticsearch:
+    endpoints: [ ${ES_ENDPOINT} ]
+    logs:
+      mapping:
+        mode: body
 
 service:
   pipelines:
+    logs:
+      receivers: [otlp]
+      processors: [resource, batch]
+      exporters: [loki, elasticsearch]
     traces:
       receivers: [otlp]
+      processors: [resource, batch]
       exporters: [zipkin]
+    metrics:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: []
