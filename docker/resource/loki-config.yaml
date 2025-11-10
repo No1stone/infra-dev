@@ -1,5 +1,4 @@
-auth_enabled: false   # 내부용이면 false로 비활성화
-#s3는 나중에
+auth_enabled: false
 
 server:
   http_listen_port: 3100
@@ -14,8 +13,7 @@ common:
       rules_directory: /loki/rules
   replication_factor: 1
   ring:
-    kvstore:
-      store: inmemory
+    kvstore: { store: inmemory }
 
 schema_config:
   configs:
@@ -23,43 +21,33 @@ schema_config:
       store: boltdb-shipper
       object_store: filesystem
       schema: v13
-      index:
-        prefix: index_
-        period: 24h
+      index: { prefix: index_, period: 24h }
 
 storage_config:
   boltdb_shipper:
     active_index_directory: /loki/index
     cache_location: /loki/boltdb-cache
-    shared_store: filesystem
   filesystem:
     directory: /loki/chunks
 
 compactor:
   working_directory: /loki/boltdb-shipper-compactor
-  shared_store: filesystem
   retention_enabled: true
   retention_delete_delay: 2h
   retention_delete_worker_count: 1
+  delete_request_store: filesystem
 
 limits_config:
-  retention_period: 168h          # 7일 보존
+  retention_period: 168h
   ingestion_rate_mb: 10
   ingestion_burst_size_mb: 20
   max_entries_limit_per_query: 5000
   max_chunks_per_query: 100000
+  reject_old_samples: false
+  reject_old_samples_max_age: 168h
+  allow_structured_metadata: false
 
 table_manager:
   retention_deletes_enabled: true
   retention_period: 168h
-
-ruler:
-  storage:
-    type: local
-    local:
-      directory: /loki/rules
-  rule_path: /loki/rules
-  alertmanager_url: http://localhost:9093
-  ring:
-    kvstore:
-      store: inmemory
+######

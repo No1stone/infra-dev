@@ -75,7 +75,7 @@ services:
       - prometheus
     environment:
       LOKI_HTTP_URL: "http://host.docker.internal:3100"
-
+      TZ: Asia/Seoul
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.13.4
     container_name: elasticsearch
@@ -142,13 +142,16 @@ services:
       OTEL_HOST: "host.docker.internal"
       OTEL_HTTP_PORT: "4318"
 
-
+#https://grafana.com/docs/opentelemetry/docker-lgtm/
   otel-collector:
-    image: otel/opentelemetry-collector-contrib:latest
+#    image: otel/opentelemetry-collector-contrib:latest
+    image: otel/opentelemetry-collector-contrib:0.104.0
+#    image: grafana/otel-lgtm:0.11.17
     container_name: otel-collector
     volumes:
       - ./otel-collector-config-local.yaml:/etc/otelcol/config.yaml
     command: [ "--config=/etc/otelcol/config.yaml" ]
+#    command: ["/otelcol", "--config=/etc/otelcol/config.yaml"]
     ports:
       - "4317:4317"   # OTLP gRPC
       - "4318:4318"   # OTLP HTTP
@@ -158,11 +161,12 @@ services:
       LOKI_ENDPOINT: "http://host.docker.internal:3100/loki/api/v1/push"
       ZIPKIN_ENDPOINT: "http://host.docker.internal:9411/api/v2/spans"
       ES_ENDPOINT: "http://host.docker.internal:9200"
+      TZ: Asia/Seoul
     restart: always
 
 
   loki:
-    image: grafana/loki:2.9.8
+    image: grafana/loki:3.5
     container_name: loki
     ports:
       - "3100:3100"
@@ -171,12 +175,16 @@ services:
       - ./loki-config.yaml:/etc/loki/config.yaml:ro
       - ./loki-data:/loki
     restart: always
+    environment:
+      - TZ=Asia/Seoul
 
   zipkin:
     image: openzipkin/zipkin:latest
     container_name: zipkin
     ports:
       - "9411:9411"
+    environment:
+      - TZ=Asia/Seoul
 
   vault:
     image: hashicorp/vault:1.16
