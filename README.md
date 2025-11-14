@@ -113,6 +113,7 @@ K6 부하테스트 + Chaos Mesh 조합 테스트
 
 ## Service Mesh (Istio / Linkerd)
 <details><summary><strong>트래픽 안정화 · 보안 강화(mTLS) · 카나리 롤아웃</strong></summary>
+
 Istio 도입  
 mTLS(서비스 간 암호화) 자동화  
 Circuit Breaker / Retry 정책  
@@ -128,6 +129,7 @@ mTLS 자동 적용
 
 ## 오토스케일링(Auto Scaling) 고도화
 <details><summary><strong>트래픽 증가 시 자동 확장 · 비용 최적화</strong></summary>
+
 Horizontal Pod Autoscaler(HPA)  
 CPU/Memory 기반 Pod 자동 증가/감소  
 Custom Metrics 기반 자동 확장  
@@ -143,6 +145,7 @@ Idle Node 자동 제거
 
 ## Observability 고도화
 <details><summary><strong>운영 모니터링 강화 · APM · 장애 감지</strong></summary>
+
 Loki 로그 필터/파이프라인 고도화  
 Grafana + Tempo(Jaeger 대체) 기반 분산 트레이싱  
 AlertManager → Slack/Email/Webhook 통합  
@@ -152,6 +155,7 @@ Uptime Robot / Heartbeat 기반 외부 헬스체크
 
 ## 보안(Security) 고급 기능
 <details><summary><strong>엔터프라이즈급 보안 체계 완성</strong></summary>
+
 Vault Transit Key Rotation 자동화  
 Vault Agent Injector로 Secret Sidecar 자동 주입  
 Cognito/Apple Login 연동 구조 추가  
@@ -161,6 +165,7 @@ OPA(Open Policy Agent) 기반 권한 평가 서비스
 
 ## 데이터 플랫폼 확장
 <details><summary><strong>Streaming · Event Driven Architecture</strong></summary>
+
 Kafka Streams / KSQLDB 분석  
 Outbox Pattern + Debezium CDC 구조  
 Elasticsearch → OpenSearch 전환  
@@ -170,6 +175,7 @@ Event Sourcing 구조 설계
 
 ## Multi-Region / DR 구성
 <details><summary><strong>재해복구 · 고가용성(HA) · 글로벌 서비스 준비</strong></summary>
+
 Active-Passive(2 Region) 구성  
 Route53 + HealthCheck 기반 자동 Failover  
 Global Accelerator 연동  
@@ -179,6 +185,7 @@ Velero Backup/Restore 자동화
 
 ## Developer Experience(DX) 향상
 <details><summary><strong>Backstage 개발자 포털 · 자동 템플릿 생성</strong></summary>
+
 Backstage 도입  
 서비스 템플릿 → 자동 배포 구조 생성  
 API 문서 자동 수집  
@@ -187,6 +194,7 @@ API 문서 자동 수집
 
 ## 테스트 자동화 & CI/CD 고도화
 <details><summary><strong>완전한 GitOps · 품질관리 자동화</strong></summary>
+
 GitHub Actions → GitOps Full Pipeline 구축  
 Argo Rollouts 자동 Canary + Rollback  
 Snyk / Trivy 보안 스캔 자동화  
