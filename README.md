@@ -96,6 +96,8 @@ private subnet - resource server
 ---
 
 # 추후 해볼 것들 (Advanced Roadmap) 
+<details> <summary>커리큘럼</summary>
+
 ## 아래 항목들은 현재 시스템에 즉시 적용된 기능은 아니며,
 ## 관련 개념·이론·아키텍처를 학습한 뒤 점진적으로 도입하기 위한 로드맵입니다.
 
@@ -200,4 +202,6 @@ Argo Rollouts 자동 Canary + Rollback
 Snyk / Trivy 보안 스캔 자동화  
 테스트 커버리지 + Mutation Testing  
 Terraform Plan 자동 Review  
+</details>
+
 </details>
